@@ -26,9 +26,11 @@ export async function generateLinkedInPost(topic) {
   const model = env('GEMINI_MODEL', 'gemini-2.5-flash');
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
   const steering = topic.context ? `\nSteering context: ${topic.context}` : '';
+  const today = new Date().toISOString().slice(0, 10);
 
   const prompt = `Write one original LinkedIn post for Digital Scholar.
 
+Current date: ${today}
 Topic: ${topic.title}${steering}
 
 Requirements:
