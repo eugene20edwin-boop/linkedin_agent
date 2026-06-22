@@ -23,8 +23,12 @@ function isRetryableStatus(status) {
 
 export async function generateLinkedInPost(topic) {
   const apiKey = requiredEnv('GEMINI_API_KEY');
-  const model = env('GEMINI_MODEL', 'gemini-2.5-flash');
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const primaryModel = env('GEMINI_MODEL', 'gemini-2.5-flash');
+  const fallbackModels = env('GEMINI_MODEL_FALLBACKS', 'gemini-2.5-flash-lite,gemini-flash-lite-latest')
+    .split(',')
+    .map((model) => model.trim())
+    .filter(Boolean);
+  const models = [...new Set([primaryModel, ...fallbackModels])];
   const steering = topic.context ? `\nSteering context: ${topic.context}` : '';
   const today = new Date().toISOString().slice(0, 10);
 
@@ -60,29 +64,46 @@ Requirements:
 
   let response;
   let body;
+  let lastFailure = '';
 
-  for (let attempt = 1; attempt <= 4; attempt += 1) {
-    response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: requestBody
-    });
+  for (const model of models) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-    body = await response.text();
+    for (let attempt = 1; attempt <= 4; attempt += 1) {
+      response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: requestBody
+      });
 
-    if (response.ok || !isRetryableStatus(response.status) || attempt === 4) {
-      break;
+      body = await response.text();
+
+      if (response.ok) {
+        console.log(`Generated content with ${model}`);
+        break;
+      }
+
+      lastFailure = `${model} failed (${response.status}): ${body}`;
+
+      if (!isRetryableStatus(response.status) || attempt === 4) {
+        console.warn(`${model} failed with ${response.status}; trying next Gemini model if available.`);
+        break;
+      }
+
+      const delay = 1500 * attempt;
+      console.warn(`${model} returned ${response.status}; retrying in ${delay}ms (${attempt}/4).`);
+      await sleep(delay);
     }
 
-    const delay = 1500 * attempt;
-    console.warn(`Gemini returned ${response.status}; retrying in ${delay}ms (${attempt}/4).`);
-    await sleep(delay);
+    if (response.ok) {
+      break;
+    }
   }
 
   if (!response.ok) {
-    throw new Error(`Gemini request failed (${response.status}): ${body}`);
+    throw new Error(`Gemini request failed after ${models.length} model(s). Last error: ${lastFailure}`);
   }
 
   const data = JSON.parse(body);
