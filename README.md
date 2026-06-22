@@ -35,7 +35,7 @@ Optional variables:
 - `GEMINI_MODEL`, defaults locally to `gemini-2.5-flash`
 - `LINKEDIN_AUTHOR_URN`, useful when posting as a person and the token cannot expose profile identity
 - `LINKEDIN_PERSON_ID`, converted to `urn:li:person:...` when `LINKEDIN_AUTHOR_URN` is not set
-- `LINKEDIN_VERSION`, defaults to `202405`
+- `LINKEDIN_VERSION`, defaults to `202606`
 
 ## Topics
 

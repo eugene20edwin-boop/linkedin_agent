@@ -46,7 +46,7 @@ jobs:
           LINKEDIN_ORGANIZATION_ID: ${{ secrets.LINKEDIN_ORGANIZATION_ID }}
           LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
           LINKEDIN_PERSON_ID: ${{ secrets.LINKEDIN_PERSON_ID }}
-          LINKEDIN_VERSION: "202405"
+          LINKEDIN_VERSION: "202606"
           COUNT: ${{ github.event.inputs.count }}
           INTERVAL_SECONDS: ${{ github.event.inputs.interval_seconds }}
           BASE_TOPIC: ${{ github.event.inputs.topic }}

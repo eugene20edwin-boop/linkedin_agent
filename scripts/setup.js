@@ -28,7 +28,7 @@ values.push(await ask('LINKEDIN_ACCESS_TOKEN', 'LinkedIn access token'));
 values.push(await ask('LINKEDIN_ORGANIZATION_ID', 'LinkedIn organization ID, blank for personal posting'));
 values.push(await ask('LINKEDIN_AUTHOR_URN', 'LinkedIn author URN, optional fallback'));
 values.push(await ask('LINKEDIN_PERSON_ID', 'LinkedIn person ID, optional fallback'));
-values.push(await ask('LINKEDIN_VERSION', 'LinkedIn API version', '202405'));
+values.push(await ask('LINKEDIN_VERSION', 'LinkedIn API version', '202606'));
 values.push(await ask('LINKEDIN_CLIENT_ID', 'LinkedIn client ID for token helper, optional'));
 values.push(await ask('LINKEDIN_CLIENT_SECRET', 'LinkedIn client secret for token helper, optional'));
 values.push(await ask('LINKEDIN_REDIRECT_URI', 'LinkedIn redirect URI for token helper', 'http://localhost:8745/callback'));

@@ -4,7 +4,7 @@ import { env, requiredEnv } from './env.js';
 function linkedinHeaders(extra = {}) {
   return {
     Authorization: `Bearer ${requiredEnv('LINKEDIN_ACCESS_TOKEN')}`,
-    'LinkedIn-Version': env('LINKEDIN_VERSION', '202405'),
+    'LinkedIn-Version': env('LINKEDIN_VERSION', '202606'),
     'X-Restli-Protocol-Version': '2.0.0',
     ...extra
   };
