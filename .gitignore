@@ -1,0 +1,7 @@
+node_modules/
+.env
+preview-banner.png
+preview-post.txt
+linkedin-banner.png
+linkedin-post.txt
+npm-debug.log*

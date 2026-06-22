@@ -1,0 +1,6 @@
+# One topic per line. Blank lines and comments are ignored.
+# Use "::" for model-only steering context.
+
+Building trust with AI-generated content::avoid hype and focus on useful safeguards
+How small teams can use AI agents without losing brand voice
+Practical LinkedIn content systems for education brands

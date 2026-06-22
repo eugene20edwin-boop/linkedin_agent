@@ -1,0 +1,19 @@
+{
+  "name": "linkedin-auto-poster",
+  "version": "1.0.0",
+  "description": "Standalone LinkedIn auto-posting tool powered by GitHub Actions, Google Gemini, and generated banner images.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "preview": "node src/index.js preview",
+    "post": "node src/index.js post",
+    "token": "node scripts/token.js"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.80"
+  }
+}
