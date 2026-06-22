@@ -13,6 +13,14 @@ function extractJson(text) {
   return JSON.parse(candidate.slice(start, end + 1));
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isRetryableStatus(status) {
+  return status === 429 || status === 500 || status === 502 || status === 503 || status === 504;
+}
+
 export async function generateLinkedInPost(topic) {
   const apiKey = requiredEnv('GEMINI_API_KEY');
   const model = env('GEMINI_MODEL', 'gemini-2.5-flash');
@@ -35,26 +43,41 @@ Requirements:
 - "bannerTitle" must be 3-7 words.
 - "bannerSubtitle" must be 5-11 words.`;
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: prompt }]
-        }
-      ],
-      generationConfig: {
-        temperature: 0.85,
-        responseMimeType: 'application/json'
+  const requestBody = JSON.stringify({
+    contents: [
+      {
+        role: 'user',
+        parts: [{ text: prompt }]
       }
-    })
+    ],
+    generationConfig: {
+      temperature: 0.85,
+      responseMimeType: 'application/json'
+    }
   });
 
-  const body = await response.text();
+  let response;
+  let body;
+
+  for (let attempt = 1; attempt <= 4; attempt += 1) {
+    response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: requestBody
+    });
+
+    body = await response.text();
+
+    if (response.ok || !isRetryableStatus(response.status) || attempt === 4) {
+      break;
+    }
+
+    const delay = 1500 * attempt;
+    console.warn(`Gemini returned ${response.status}; retrying in ${delay}ms (${attempt}/4).`);
+    await sleep(delay);
+  }
 
   if (!response.ok) {
     throw new Error(`Gemini request failed (${response.status}): ${body}`);
